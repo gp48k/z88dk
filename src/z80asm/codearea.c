@@ -501,11 +501,11 @@ void append_file_contents(FILE *file, long num_bytes)
 /*-----------------------------------------------------------------------------
 *   read/write current module to an open file
 *----------------------------------------------------------------------------*/
-int fwrite_module_code(FILE *file)
+Bool fwrite_module_code(FILE *file)
 {
 	Section *section;
 	SectionHashElem *iter;
-	int code_size = 0;
+	Bool wrote_data = FALSE;
 	int addr, size;
 
 	init_module();
@@ -527,14 +527,14 @@ int fwrite_module_code(FILE *file)
 			if (size > 0)		/* ByteArray_item(bytes,0) creates item[0]!! */
 				xfput_chars(file, (char *)ByteArray_item(section->bytes, addr), size);
 
-			code_size += size;
+			wrote_data = TRUE;
 		}
 	}
 
-	if (code_size > 0)
+	if (wrote_data)
 		xfput_int32(file, -1);		/* end marker */
 
-	return code_size;
+	return wrote_data;
 }
 
 /*-----------------------------------------------------------------------------
